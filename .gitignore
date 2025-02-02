@@ -1,0 +1,12 @@
+# Rust/Cargo files
+/target
+**/*.rs.bk
+**/Cargo.lock
+
+# Editor files (adjust to your editor)
+*.swp
+.idea/
+.vscode/
+
+# OS-specific files
+.DS_Store

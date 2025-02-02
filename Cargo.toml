@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "postings-rest-server",
+    "postings-service",
+    "postings-repository",
+]
