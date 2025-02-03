@@ -10,7 +10,17 @@ This project is the Rust version of the ledger solution originally available at 
 
 ## Getting Started
 
-### 1. Start the Development PostgreSQL Database
+### 0. Short form
+
+To run the tests, ensure docker is running and simply execute:
+
+```bash
+cargo test
+```
+
+### 1. Start the Development PostgreSQL Database (optional)
+
+This is done automatically if the container is not on. But the test procedure do not stop the containers after the test.
 
 Use Docker Compose to start a development PostgreSQL instance and Adminer for easy database access.
 
@@ -27,7 +37,9 @@ This command does the following:
   You can access Adminer at:  
   [http://localhost:18080/?pgsql=postgres&username=user](http://localhost:18080/?pgsql=postgres&username=user)
 
-### 2. Initialize the Database Schema
+### 2. Initialize the Database Schema (optional)
+
+This is also done automatically by the test scripts.
 
 After starting the PostgreSQL instance, run the Diesel migrations to create the tables and seed the database.
 

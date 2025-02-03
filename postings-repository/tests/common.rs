@@ -17,12 +17,15 @@ pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 pub fn establish_connection() -> PgConnection {
     use std::env;
     use dotenv::dotenv;
+    ensure_docker_database_running();
     dotenv().ok();
     let database_url = env::var("DATABASE_URL")
         .expect("DATABASE_URL must be set in .env for tests");
-    let conn = PgConnection::establish(&database_url)
+    let mut conn = PgConnection::establish(&database_url)
         .expect(&format!("Error connecting to {}", database_url));
     // Optionally run migrations here
+    conn.run_pending_migrations(MIGRATIONS)
+    .expect("Failed to run migrations");    
     conn
 }
 
@@ -62,5 +65,43 @@ impl Drop for TestDatabaseGuard {
         // Open a new connection for cleanup.
         let mut conn = establish_connection();
         cleanup_database(&mut conn);
+    }
+}
+
+use std::process::Command;
+use diesel::result::ConnectionError;
+
+/// Try to establish a connection; if it fails, attempt to start the Docker container.
+pub fn ensure_docker_database_running() {
+    dotenv().ok();
+    let database_url = env::var("DATABASE_URL")
+        .expect("DATABASE_URL must be set in .env for tests");
+
+    // Try to connect once
+    match PgConnection::establish(&database_url) {
+        Ok(_) => {
+            // Connection successful, nothing to do.
+        },
+        Err(ConnectionError::BadConnection(_)) => {
+            // Could not connect. Attempt to start Docker Compose.
+            println!("Database not reachable; attempting to start Docker Compose...");
+            let output = Command::new("docker")
+                .args(&["compose", "-f", "compose-postgres.yml", "up", "-d"])
+                .output()
+                .expect("Failed to execute docker compose command");
+
+            if !output.status.success() {
+                panic!(
+                    "Docker compose failed to start the database: {}",
+                    String::from_utf8_lossy(&output.stderr)
+                );
+            }
+
+            // Optionally, wait a few seconds here for the DB to be ready.
+            std::thread::sleep(std::time::Duration::from_secs(5));
+        },
+        Err(err) => {
+            panic!("Unexpected error connecting to database: {:?}", err);
+        }
     }
 }
