@@ -26,11 +26,16 @@ pub fn establish_connection() -> PgConnection {
     conn
 }
 
-/// Seed the database with fixture data from an SQL file.
-pub fn seed_database(conn: &mut PgConnection) {
-    let fixture_path = Path::new("tests/fixtures/account_stmt_dataset.sql");
+/// Seed the database with fixture data from the specified SQL file.
+///
+/// # Arguments
+///
+/// * `conn` - A mutable reference to a PostgreSQL connection.
+/// * `fixture_file` - The path to the SQL file to execute.
+pub fn seed_database(conn: &mut PgConnection, fixture_file: &str) {
+    let fixture_path = Path::new(fixture_file);
     let sql = fs::read_to_string(fixture_path)
-        .expect("Failed to read fixture file");
+        .expect(&format!("Failed to read fixture file: {}", fixture_file));
     conn.batch_execute(&sql)
         .expect("Failed to seed the database");
 }

@@ -19,7 +19,7 @@ fn test_create_financial_statement_ok() {
     let mut conn = establish_connection();
 
     // Seed fixture data
-    seed_database(&mut conn);    
+    seed_database(&mut conn, "tests/fixtures/account_stmt_dataset.sql");    
 
     // Create a guard that will clean up after the test.
     let _guard = TestDatabaseGuard::new();
@@ -60,3 +60,4 @@ fn test_create_financial_statement_ok() {
     // Assert that the saved statement has a non-empty ID.
     assert!(!saved_stmt.id.is_empty(), "Saved AccountStmt should have a non-empty id");
 }
+

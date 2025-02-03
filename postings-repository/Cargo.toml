@@ -16,4 +16,5 @@ diesel-derive-enum = {version="2.1.0", features=["postgres"]}
 [dev-dependencies]
 diesel_migrations = "2.2.0"
 dotenv = "0.15.0"
+serial_test = "3.2.0"
 # plus your chosen crates for 'rust_decimal' or 'diesel-derive-enum' if you want

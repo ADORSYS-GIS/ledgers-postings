@@ -301,3 +301,43 @@ pub mod posting_trace_repository {
             .optional()
     }
 }
+
+pub mod chart_of_account_repository {
+    use super::*;
+
+    use crate::models::{ChartOfAccount, NewChartOfAccount};
+    use crate::schema::chart_of_account::dsl::*;
+    
+    /// Saves a new ChartOfAccount into the database and returns the created record.
+    ///
+    /// # Arguments
+    ///
+    /// * `conn` - A mutable reference to a PostgreSQL connection.
+    /// * `new_coa` - A NewChartOfAccount instance containing the data to insert.
+    ///
+    /// # Returns
+    ///
+    /// A QueryResult wrapping the inserted ChartOfAccount.
+    pub fn save(conn: &mut PgConnection, new_coa: NewChartOfAccount) -> QueryResult<ChartOfAccount> {
+        diesel::insert_into(chart_of_account)
+            .values(&new_coa)
+            .get_result(conn)
+    }
+
+    /// Finds a ChartOfAccount by its ID.
+    ///
+    /// # Arguments
+    ///
+    /// * `conn` - A mutable reference to a PostgreSQL connection.
+    /// * `id_value` - The ID of the ChartOfAccount to retrieve.
+    ///
+    /// # Returns
+    ///
+    /// A QueryResult wrapping an Option containing the ChartOfAccount if found.
+    pub fn find_by_id(conn: &mut PgConnection, id_value: &str) -> QueryResult<Option<ChartOfAccount>> {
+        chart_of_account
+            .find(id_value)
+            .first::<ChartOfAccount>(conn)
+            .optional()
+    }    
+}
