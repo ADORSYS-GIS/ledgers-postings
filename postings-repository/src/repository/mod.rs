@@ -70,6 +70,8 @@ use crate::schema::account_stmt::dsl::*;
 //
 pub mod ledger_account_repository {
     use super::*;
+    use crate::models::{LedgerAccount, NewLedgerAccount};
+    use crate::schema::ledger_account::dsl::*;
 
     /// findById(...) => Return an Option<LedgerAccount> by primary key
     pub fn find_by_id(
@@ -96,6 +98,24 @@ pub mod ledger_account_repository {
             .first::<LedgerAccount>(conn)
             .optional()
     }
+
+    
+    /// Saves a new LedgerAccount into the database and returns the inserted record.
+    ///
+    /// # Arguments
+    ///
+    /// * `conn` - A mutable reference to a PostgreSQL connection.
+    /// * `new_account` - A NewLedgerAccount instance containing the data to insert.
+    ///
+    /// # Returns
+    ///
+    /// A QueryResult wrapping the inserted LedgerAccount.
+    pub fn save(conn: &mut PgConnection, new_account: NewLedgerAccount) -> QueryResult<LedgerAccount> {
+        diesel::insert_into(ledger_account)
+            .values(&new_account)
+            .get_result(conn)
+    }
+    
 }
 
 //
