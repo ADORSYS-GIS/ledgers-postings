@@ -7,11 +7,9 @@
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use diesel::{OptionalExtension, QueryDsl, ExpressionMethods, RunQueryDsl};
-use rust_decimal::Decimal;
 
 use crate::models::{
-    AccountStmt, Ledger, LedgerAccount, LedgerStmt, Posting, PostingLine, PostingTrace, OpNote,
-    ChartOfAccount,
+    Ledger, LedgerStmt, Posting, PostingLine, PostingTrace, OpNote,
 };
 use crate::models::enums::{StmtStatus};
 

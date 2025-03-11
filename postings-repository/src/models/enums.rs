@@ -21,21 +21,21 @@ use diesel_derive_enum::DbEnum;
 #[ExistingTypePath = "crate::schema::sql_types::AccountCategory"]  
 pub enum AccountCategory {
     #[db_rename = "RE"]
-    RE,    // "RE", "Revenue",BalanceSide.Cr
+    RE,    // "RE", "Revenue", BalanceSide.Cr
     #[db_rename = "EX"]
-    EX,    // "EX", "Expense",BalanceSide.Dr
+    EX,    // "EX", "Expense", BalanceSide.Dr
     #[db_rename = "AS"]
-    AS,    // "AS", "Asset",BalanceSide.Dr
+    AS,    // "AS", "Asset", BalanceSide.Dr
     #[db_rename = "LI"]
-    LI,    // "LI", "Liability",BalanceSide.Cr
+    LI,    // "LI", "Liability", BalanceSide.Cr
     #[db_rename = "EQ"]
-    EQ,    // "EQ", "Equity",BalanceSide.Cr
+    EQ,    // "EQ", "Equity", BalanceSide.Cr
     #[db_rename = "NOOP"]
-    NOOP,  // "NOOP", "Non-Operating Income or Expenses",BalanceSide.DrCr
+    NOOP,  // "NOOP", "Non-Operating Income or Expenses", BalanceSide.DrCr
     #[db_rename = "NORE"]
-    NORE,  // "NORE", "Non-Operating Revenue",BalanceSide.Cr
+    NORE,  // "NORE", "Non-Operating Revenue", BalanceSide.Cr
     #[db_rename = "NOEX"]
-    NOEX,  // "NOEX", "Non-Operating Expenses",BalanceSide.Dr
+    NOEX,  // "NOEX", "Non-Operating Expenses", BalanceSide.Dr
 }
 
 /// The balance side describes the side of the balance where the account balance
