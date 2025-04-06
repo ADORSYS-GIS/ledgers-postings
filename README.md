@@ -53,15 +53,37 @@ From the **workspace root directory** (`ledgers-postings/`):
 cargo test
 ```
 
-This command will:
+This command will attempt to:
 
-1.  Check if the PostgreSQL container defined in `postings-repository/compose-postgres.yml` is running. If not, it will start it.
+1.  Check if the expected PostgreSQL container (defined in `postings-repository/compose-postgres.yml`) is running. If not, it will try to start it using Docker Compose.
 2.  Execute Diesel migrations to set up the schema in the test database.
 3.  Run all tests within the `postings-repository` crate:
     *   Each test seeds the database with specific fixture data (`tests/fixtures/`).
     *   Repository functions are called and their results asserted.
     *   Database tables are automatically cleaned up after each test using a `TestDatabaseGuard` (`tests/common.rs`).
     *   Tests run sequentially (`#[serial]`) to avoid database conflicts.
+
+#### Troubleshooting Test Failures
+
+*   **Connection Errors:** If tests fail early with errors related to database connection, authentication (password), or finding the database (`mydb`), it might be because another PostgreSQL instance is running on your machine (perhaps on the default port 5432) and interfering with the one managed by Docker Compose for these tests.
+    *   **Check running containers:** List your running Docker containers to see if another PostgreSQL container is active:
+        ```bash
+        docker ps
+        ```
+        Look for containers with `postgres` in the name or image column.
+    *   **Stop the conflicting container:** If you find an unexpected PostgreSQL container running, stop it using its name or ID:
+        ```bash
+        # Replace <container_name_or_id> with the actual name or ID
+        docker stop <container_name_or_id>
+        ```
+    *   **Remove the conflicting container (optional):** If you don't need the stopped container anymore, you can remove it:
+        ```bash
+        # Replace <container_name_or_id> with the actual name or ID
+        docker rm <container_name_or_id>
+        ```
+    *   **Retry:** After stopping/removing the conflicting container, run `cargo test` again. The test setup should now be able to start and connect to the correct PostgreSQL instance defined in `compose-postgres.yml`.
+*   **Migration Errors:** Ensure migrations have run correctly. You can try running `diesel migration run` manually from the `postings-repository` directory.
+*   **Fixture Errors:** Check the SQL syntax in the relevant `tests/fixtures/*.sql` file.
 
 ### Starting Development Database Manually (Optional)
 
@@ -70,7 +92,7 @@ If you want to run the PostgreSQL database and Adminer (web UI) independently:
 1.  Navigate to the `postings-repository` directory.
 2.  Run:
     ```bash
-    docker compose -f compose-postgres.yml up -d
+    docker compose -f postings-repository/compose-postgres.yml up -d
     ```
 3.  Access Adminer at `http://localhost:18080` (or the configured port). Use server `postgres`, username `user`, password `password` (or as configured in `compose-postgres.yml` and `.env`).
 

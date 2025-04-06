@@ -74,14 +74,19 @@ Defines Rust enums that map to PostgreSQL `ENUM` types using `diesel_derive_enum
 
 ## 4. Testing (`postings-repository/tests/`)
 
-*   **Integration Tests**: Tests interact with a real PostgreSQL database.
-*   **Test Setup**: `common.rs` provides utility functions:
-    *   `establish_connection()`: Connects to the test database (likely configured via `.env`).
+*   **Integration Tests**: Tests interact with a real PostgreSQL database managed via Docker Compose.
+*   **Test Setup (`common.rs`)**: Provides utility functions:
+    *   `establish_connection()`: Connects to the test database configured via `.env` (`DATABASE_URL`). It includes logic to automatically start the required Docker Compose service (`postings-repository/compose-postgres.yml`) if it's not already running. **Note:** This function *does not* explicitly verify if the established connection points to the intended database/user defined in the environment; it relies on `PgConnection::establish` failing if the URL, credentials, or host are incorrect.
     *   `seed_database()`: Executes SQL scripts (from `tests/fixtures/`) to populate tables with test data before a test runs.
-    *   `TestDatabaseGuard`: A struct implementing `Drop` to clean up database tables *after* a test runs, ensuring test isolation.
+    *   `TestDatabaseGuard`: A struct implementing `Drop` to `TRUNCATE` relevant tables *after* a test runs, ensuring test isolation.
 *   **Isolation**: The `#[serial]` attribute from the `serial_test` crate is used on test functions. This ensures that tests affecting the database run sequentially, not in parallel, preventing interference.
 *   **Assertions**: Standard Rust `assert_eq!`, `assert!`, etc., are used to verify the results returned by repository functions against expected values based on the fixture data.
 *   **Error Handling**: Tests often use `.unwrap()` or `.expect()` on `QueryResult` because test failures are expected if database operations fail. This is generally **not** done in application code. Double unwraps (`.unwrap().unwrap()`) are common when dealing with `QueryResult<Option<T>>`.
+*   **Troubleshooting Conflicts**: A common issue is having another PostgreSQL instance running locally (or in another Docker container) that conflicts with the one intended for testing (usually by occupying the same port). If tests fail with connection or authentication errors:
+    1.  Check for other running Postgres containers: `docker ps`
+    2.  Stop the conflicting container: `docker stop <container_name_or_id>`
+    3.  Optionally remove it: `docker rm <container_name_or_id>`
+    4.  Rerun `cargo test`.
 
 ## 5. Development & Environment
 
